@@ -33,8 +33,16 @@ io.on("connection", (socket) => {
 
     socket.emit("message", "Welcome!!");
 
+    // when a new user joins the chat
+    socket.broadcast.emit("message", "A user has joined the chat");
+
     socket.on("sendMessage", (message) => {
         io.emit("message", message);
+    });
+
+    // when an user leaves the chat
+    socket.on("disconnect", () => {
+        io.emit("message", "A user has left the chat");
     });
 });
 
