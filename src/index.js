@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
+const Filter = require("bad-words");
 
 const app = express();
 const server = http.createServer(app);
@@ -37,8 +38,12 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("message", "A user has joined the chat");
 
     socket.on("sendMessage", (message, callback) => {
+        const filter = new Filter();
+        if (filter.isProfane(message)) {
+            return callback("Profanity is not allowed");
+        }
         io.emit("message", message);
-        callback("deliverd!!!");
+        callback();
     });
 
     // when an user leaves the chat
@@ -47,11 +52,12 @@ io.on("connection", (socket) => {
     });
 
     // sends location to all the users
-    socket.on("sendLocation", (location) => {
+    socket.on("sendLocation", (location, callback) => {
         io.emit(
             "message",
             `https://google.com/maps?q=${location.latitude},${location.longitude}`
         );
+        callback();
     });
 });
 
