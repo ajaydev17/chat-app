@@ -36,8 +36,9 @@ io.on("connection", (socket) => {
     // when a new user joins the chat
     socket.broadcast.emit("message", "A user has joined the chat");
 
-    socket.on("sendMessage", (message) => {
+    socket.on("sendMessage", (message, callback) => {
         io.emit("message", message);
+        callback("deliverd!!!");
     });
 
     // when an user leaves the chat
