@@ -12,15 +12,24 @@ const socket = io();
 //     socket.emit('increment');
 // });
 
+const $messageForm = document.querySelector("#form-message");
+const $messageFormInput = document.querySelector("input");
+const $messageFormButton = document.querySelector("button");
+const $sendLocationButton = docuemnt.querySelector("#send-location");
+
 socket.on("message", (message) => {
     console.log(message);
 });
 
-document.querySelector("#form-message").addEventListener("submit", (event) => {
+$messageForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    $messageFormButton.setAttribute("disabled", "disabled");
 
     const message = event.target.elements.message.value;
     socket.emit("sendMessage", message, (error) => {
+        $messageForm.removeAttribute("disabled");
+        $messageFormInput.value = "";
+        $messageFormInput.focus();
         if (error) {
             return console.log(error);
         }
@@ -28,10 +37,13 @@ document.querySelector("#form-message").addEventListener("submit", (event) => {
     });
 });
 
-document.querySelector("#send-location").addEventListener("click", (event) => {
+$sendLocationButton.addEventListener("click", (event) => {
     if (!navigator.geolocation) {
         return alert("geolocation not supported by your browser!!");
     }
+
+    $sendLocationButton.setAttribute("disabled", "disabled");
+
     navigator.geolocation.getCurrentPosition((position) => {
         // sends location to the server
         socket.emit(
@@ -41,6 +53,7 @@ document.querySelector("#send-location").addEventListener("click", (event) => {
                 longitude: position.coords.longitude,
             },
             () => {
+                $sendLocationButton.removeAttribute("disabled");
                 console.log("Location has been shared successfully!!");
             }
         );
