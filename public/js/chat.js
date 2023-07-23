@@ -12,13 +12,22 @@ const socket = io();
 //     socket.emit('increment');
 // });
 
+// get the elements using query selector
 const $messageForm = document.querySelector("#form-message");
 const $messageFormInput = document.querySelector("input");
 const $messageFormButton = document.querySelector("button");
-const $sendLocationButton = docuemnt.querySelector("#send-location");
+const $sendLocationButton = document.querySelector("#send-location");
+const $messages = document.querySelector("#messages");
+
+// get the template from query selector
+const $messageTemplate = document.querySelector("#message-template").innerHTML;
 
 socket.on("message", (message) => {
     console.log(message);
+    const html_value = Mustache.render($messageTemplate, {
+        message,
+    });
+    $messages.insertAdjacentHTML("beforeend", html_value);
 });
 
 $messageForm.addEventListener("submit", (event) => {
@@ -27,7 +36,7 @@ $messageForm.addEventListener("submit", (event) => {
 
     const message = event.target.elements.message.value;
     socket.emit("sendMessage", message, (error) => {
-        $messageForm.removeAttribute("disabled");
+        $messageFormButton.removeAttribute("disabled");
         $messageFormInput.value = "";
         $messageFormInput.focus();
         if (error) {
