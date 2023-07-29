@@ -25,6 +25,10 @@ const $locationMessageTemplate = document.querySelector(
     "#location-message-template"
 ).innerHTML;
 
+const { username, roomname } = Qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+});
+
 socket.on("message", (message) => {
     console.log(message);
     const html_value = Mustache.render($messageTemplate, {
@@ -82,3 +86,6 @@ $sendLocationButton.addEventListener("click", (event) => {
         );
     });
 });
+
+// emit an action when user joins a chat
+socket.emit("join", { username, roomname });

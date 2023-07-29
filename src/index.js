@@ -36,13 +36,18 @@ io.on("connection", (socket) => {
     //     io.emit('countUpdated', count);
     // });
 
-    socket.emit("message", generateMessage("Welcome to the chat room!!."));
+    socket.on("join", ({ username, roomname }) => {
+        socket.join(roomname);
+        socket.emit("message", generateMessage("Welcome to the chat room!!."));
 
-    // when a new user joins the chat
-    socket.broadcast.emit(
-        "message",
-        generateMessage("A user has joined the chat!!.")
-    );
+        // when a new user joins the chat
+        socket.broadcast
+            .to(roomname)
+            .emit(
+                "message",
+                generateMessage(`${username} has joined the chat!!.`)
+            );
+    });
 
     socket.on("sendMessage", (message, callback) => {
         const filter = new Filter();
