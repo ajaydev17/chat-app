@@ -21,11 +21,23 @@ const $messages = document.querySelector("#messages");
 
 // get the template from query selector
 const $messageTemplate = document.querySelector("#message-template").innerHTML;
+const $locationMessageTemplate = document.querySelector(
+    "#location-message-template"
+).innerHTML;
 
 socket.on("message", (message) => {
     console.log(message);
     const html_value = Mustache.render($messageTemplate, {
         message,
+    });
+    $messages.insertAdjacentHTML("beforeend", html_value);
+});
+
+// listen for location message
+socket.on("locationMessage", (url) => {
+    console.log(url);
+    const html_value = Mustache.render($locationMessageTemplate, {
+        url,
     });
     $messages.insertAdjacentHTML("beforeend", html_value);
 });
