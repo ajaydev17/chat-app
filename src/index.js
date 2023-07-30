@@ -74,7 +74,14 @@ io.on("connection", (socket) => {
 
     // when an user leaves the chat
     socket.on("disconnect", () => {
-        io.emit("message", generateMessage("A user has left the chat!!."));
+        const user = removeUser(socket.id);
+
+        if (user) {
+            io.emit(
+                "message",
+                generateMessage(`${user.username} user has left the chat!!.`)
+            );
+        }
     });
 
     // sends location to all the users
