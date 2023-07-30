@@ -9,6 +9,13 @@ const {
     generateLocationMessage,
 } = require("./utils/messages");
 
+const {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInRoom,
+} = require("./utils/users");
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
@@ -36,17 +43,24 @@ io.on("connection", (socket) => {
     //     io.emit('countUpdated', count);
     // });
 
-    socket.on("join", ({ username, roomname }) => {
-        socket.join(roomname);
+    socket.on("join", ({ username, roomname }, callback) => {
+        const { error, user } = addUser({ id: socket.id, username, roomname });
+        if (error) {
+            return callback(error);
+        }
+
+        socket.join(user.roomname);
         socket.emit("message", generateMessage("Welcome to the chat room!!."));
 
         // when a new user joins the chat
         socket.broadcast
-            .to(roomname)
+            .to(user.roomname)
             .emit(
                 "message",
-                generateMessage(`${username} has joined the chat!!.`)
+                generateMessage(`${user.username} has joined the chat!!.`)
             );
+
+        callback();
     });
 
     socket.on("sendMessage", (message, callback) => {

@@ -88,4 +88,6 @@ $sendLocationButton.addEventListener("click", (event) => {
 });
 
 // emit an action when user joins a chat
-socket.emit("join", { username, roomname });
+socket.emit("join", { username, roomname }, (error) => {
+    console.log(error);
+});
