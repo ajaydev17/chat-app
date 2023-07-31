@@ -64,11 +64,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sendMessage", (message, callback) => {
+        const user = getUser(socket.id);
         const filter = new Filter();
         if (filter.isProfane(message)) {
             return callback("Profanity is not allowed");
         }
-        io.emit("message", generateMessage(message));
+        io.to(user.roomname).emit("message", generateMessage(message));
         callback();
     });
 
@@ -77,7 +78,7 @@ io.on("connection", (socket) => {
         const user = removeUser(socket.id);
 
         if (user) {
-            io.emit(
+            io.to(user.roomname).emit(
                 "message",
                 generateMessage(`${user.username} user has left the chat!!.`)
             );
@@ -86,7 +87,8 @@ io.on("connection", (socket) => {
 
     // sends location to all the users
     socket.on("sendLocation", (location, callback) => {
-        io.emit(
+        const user = getUser(socket.id);
+        io.to(user.roomname).emit(
             "locationMessage",
             generateLocationMessage(
                 `https://google.com/maps?q=${location.latitude},${location.longitude}`
