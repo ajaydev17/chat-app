@@ -38,6 +38,7 @@ socket.on("message", (message) => {
         createdAt: moment(message.createdAt).format("h:mm a"),
     });
     $messages.insertAdjacentHTML("beforeend", html_value);
+    autoScroll();
 });
 
 // listen for location message
@@ -48,6 +49,7 @@ socket.on("locationMessage", (message) => {
         createdAt: moment(message.createdAt).format("h:mm a"),
     });
     $messages.insertAdjacentHTML("beforeend", html_value);
+    autoScroll();
 });
 
 $messageForm.addEventListener("submit", (event) => {
@@ -104,3 +106,25 @@ socket.on("roomData", ({ roomname, users }) => {
     });
     document.querySelector("#sidebar-message").innerHTML = html_value;
 });
+
+const autoScroll = () => {
+    $lastMessage = $messages.lastElementChild;
+
+    // height of the last sent message
+    lastMessageStyle = getComputedStyle($lastMessage);
+    lastMessageMargin = parseInt(lastMessageStyle.marginBottom);
+    lastMessageHeight = $lastMessage.offsetHeight + lastMessageMargin;
+
+    // visible height
+    const visibleHeight = $lastMessage.offsetHeight;
+
+    // scroll container height
+    const containerHeight = $lastMessage.scrollHeight;
+
+    // how far we have scrolled past
+    const scrollOffset = $lastMessage.scrollTop + visibleHeight;
+
+    if (containerHeight - lastMessageHeight <= scrollOffset) {
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+};
