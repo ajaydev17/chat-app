@@ -66,6 +66,11 @@ io.on("connection", (socket) => {
                 )
             );
 
+        io.to(user.roomname).emit("roomData", {
+            roomname: user.roomname,
+            users: getUsersInRoom(user.roomname),
+        });
+
         callback();
     });
 
@@ -94,6 +99,11 @@ io.on("connection", (socket) => {
                     `${user.username} has left the chat!!.`
                 )
             );
+
+            io.to(user.roomname).emit("roomData", {
+                roomname: user.roomname,
+                users: getUsersInRoom(user.roomname),
+            });
         }
     });
 

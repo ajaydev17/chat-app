@@ -24,6 +24,8 @@ const $messageTemplate = document.querySelector("#message-template").innerHTML;
 const $locationMessageTemplate = document.querySelector(
     "#location-message-template"
 ).innerHTML;
+const $sidebarMessageTemplate =
+    document.querySelector("#sidebar-template").innerHTML;
 
 const { username, roomname } = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -93,4 +95,12 @@ socket.emit("join", { username, roomname }, (error) => {
         alert(error);
         location.href = "/";
     }
+});
+
+socket.on("roomData", ({ roomname, users }) => {
+    const html_value = Mustache.render($sidebarMessageTemplate, {
+        roomname,
+        users,
+    });
+    document.querySelector("#sidebar-message").innerHTML = html_value;
 });
